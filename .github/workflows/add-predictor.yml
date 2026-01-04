@@ -1,0 +1,75 @@
+name: Add predictor scaffold
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-predictor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Create scaffold files
+        run: |
+          set -e
+          mkdir -p tradepulse-web/server
+          mkdir -p tradepulse-web/src
+
+          cat > tradepulse-web/server/index.js <<'EOF'
+/* Minimal backend (index.js) */
+const express = require("express");
+const axios = require("axios");
+const cors = require("cors");
+require("dotenv").config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+const PORT = process.env.PORT || 4000;
+app.get("/healthz", (_req, res) => res.json({ ok: true }));
+app.listen(PORT, () => console.log(`Predictor API listening on http://localhost:${PORT}`));
+EOF
+
+          cat > tradepulse-web/server/package.json <<'EOF'
+{
+  "name": "tradepulse-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": { "start": "node index.js" },
+  "dependencies": { "axios": "^1.4.0", "cors": "^2.8.5", "dotenv": "^16.3.1", "express": "^4.18.2" }
+}
+EOF
+
+          cat > tradepulse-web/src/main.jsx <<'EOF'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+ReactDOM.createRoot(document.getElementById("root")).render(<React.StrictMode><App /></React.StrictMode>);
+EOF
+
+          cat > tradepulse-web/src/App.jsx <<'EOF'
+import React from "react";
+export default function App(){ return <div><h1>TradePulse</h1></div>; }
+EOF
+
+          cat > tradepulse-web/src/index.css <<'EOF'
+body { margin: 0; font-family: Arial, sans-serif; background: #f8f9fa; }
+EOF
+
+          cat > tradepulse-web/vite.config.js <<'EOF'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+export default defineConfig({ plugins: [react()], server: { proxy: { "/api": { target: "http://localhost:4000", changeOrigin: true } } } });
+EOF
+
+      - name: Commit and create PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: add tradepulse scaffold"
+          branch: add/tradepulse-predictor
+          title: "Add TradePulse predictor scaffold"
+          body: "Adds backend scaffold and minimal frontend files."
