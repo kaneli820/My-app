@@ -1,0 +1,49 @@
+cd tradepulse-web/server
+npm install
+# copy .env.example to .env and set your key
+cp .env.example .env
+# put your TwelveData key in server/.env as TWELVEDATA_KEY
+npm start
+- name: Create pull request
+  uses: peter-evans/create-pull-request@v5
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    commit-message: "chore: add tradepulse backend + improved frontend"
+    branch: add/tradepulse-predictor
+    title: "Add TradePulse predictor backend and frontend improvements"
+    body: |
+      This PR adds:
+      - Express backend (server/index.js) that fetches candle data and returns predictions.
+      - Backend package.json and .env.example.
+      - Updated React frontend (src/App.jsx, src/main.jsx, src/index.css).
+      - Vite proxy configuration and README.
+        - name: Workflow complete
+    run: echo "Scaffold committed and PR created (if successful)."
+    
+What this workflow does
+- When you run it, it:
+  - Creates the tradepulse-web/server and tradepulse-web/src files shown above.
+  - Adds a server package.json and .env.example.
+  - Updates the frontend files and vite.config.js and README.
+  - Commits the changes on a new branch and opens a Pull Request for your review.
+
+How to run it from your Android phone (detailed)
+1. Open the repository URL: https://github.com/kaneli820/My-app
+2. Tap "Add file" → "Create new file".
+3. Enter the filename exactly: .github/workflows/add-predictor.yml
+4. Paste the full workflow YAML from the code block above into the file editor.
+5. At the bottom: in "Commit new file" choose "Commit directly to the main branch" (or your default branch) and press Commit.
+6. Open the "Actions" tab in the repo (the new workflow should appear). Tap the workflow, then tap "Run workflow" (choose default inputs) to trigger it.
+7. Wait for the workflow run to finish. If successful it will create a branch named add/tradepulse-predictor and open a Pull Request. You’ll get a notification and you can open the PR on your phone to review/merge.
+
+Permissions and safety notes
+- The workflow uses the repository's built-in GITHUB_TOKEN so it can push a branch and open a PR. That token is limited to this repo and is safe for this purpose.
+- The workflow will overwrite or create the specified files. If you already have files with the same paths, the changes will be committed (they’ll show as file modifications in the PR). You can inspect and revert if needed.
+- After the PR is created you can review changes before merging. Nothing is merged automatically.
+
+If you want I can now:
+- Provide a smaller or different set of files (e.g., only backend, or only improved frontend).
+- Generate the same scaffold as a single patch (git-format-patch) you can manually apply.
+- Walk you step-by-step while you create the workflow on your phone (I’ll give exact phrases to paste).
+
+Which option do you want? Would you like me to produce any changes to the file contents before you add the workflow?
